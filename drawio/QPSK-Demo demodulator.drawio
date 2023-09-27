@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-09-27T14:46:18.852Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" etag="6aNsTWnCW74JveqNExTE" version="21.8.2" type="device">
+<mxfile host="app.diagrams.net" modified="2023-09-27T15:29:22.453Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" etag="r1cxwJVKvXrb2C0xhFWj" version="21.8.2" type="device">
   <diagram id="HDGeu96EwJTAYUVn2mI9" name="Page-1">
-    <mxGraphModel dx="1687" dy="882" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1434" dy="750" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -78,7 +78,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="SC3UIt4IJOYI4lEojMen-50" value="Automatic gain control (AGC)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="300" y="160" width="120" height="40" as="geometry" />
+          <mxGeometry x="320" y="120" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="SC3UIt4IJOYI4lEojMen-74" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;" parent="1" source="SC3UIt4IJOYI4lEojMen-54" target="SC3UIt4IJOYI4lEojMen-70" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -408,8 +408,17 @@
         <mxCell id="SC3UIt4IJOYI4lEojMen-153" value="Decoded bytes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="1800" y="540" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="_9m8mjD01f-hznnUK-HB-1" value="https://github.com/F33RNI/QPSK-Demo&lt;br&gt;&lt;br&gt;Drawn by Fern Lane, 2023" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;strokeWidth=1;fontSize=14;fontStyle=0" vertex="1" parent="1">
+        <mxCell id="_9m8mjD01f-hznnUK-HB-1" value="https://github.com/F33RNI/QPSK-Demo&lt;br&gt;&lt;br&gt;Drawn by Fern Lane, 2023" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;strokeWidth=1;fontSize=14;fontStyle=0" parent="1" vertex="1">
           <mxGeometry x="1370" y="530" width="270" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="N5Y4rW9etSAQyaRnbx4b-2" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="SC3UIt4IJOYI4lEojMen-50">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="280" as="sourcePoint" />
+            <mxPoint x="350" y="230" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="300" y="160" />
+            </Array>
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
