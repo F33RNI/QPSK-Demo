@@ -5,7 +5,19 @@
 
 ----------
 
-The screenshot above shows an example of a "Hello!" message.
+### Block diagram of modulator section:
+
+![](drawio/QPSK-Demo modulator.drawio.png)
+
+### Block diagram of demodulator section:
+
+![](drawio/QPSK-Demo demodulator.drawio.png)
+
+As you can see, I'm using a Costas Loop with a PI (Proportional-Integrator controller) to control the local oscillator
+
+----------
+
+The screenshot at the top shows an example of a "Hello!" message.
 
 `TX_DATA`:
 ```python
@@ -81,3 +93,14 @@ Decoded byte: 0b01101100, char: l
 Decoded byte: 0b01101111, char: o
 Decoded byte: 0b00100001, char: !
 ```
+
+----------
+
+### To test transmission using your speaker and microphone:
+
+1. Install the PyAudio package
+2. Ensure that your sound card supports the float32 format and the values of `CHUNK_SIZE` and `SAMPLING_RATE`
+3. Set `USE_LINE_SIMULATION` to `False`
+4. Make sure your speaker and microphone are selected as the default devices in your system
+5. Place the microphone near the speaker and create a quiet environment
+6. Run the script. You should hear the transmission. If the sound level is set correctly, you will see a message indicating the start and end of recording
