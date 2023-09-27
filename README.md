@@ -7,11 +7,11 @@
 
 ### Block diagram of modulator section:
 
-![](./drawio/QPSK-Demo modulator.drawio.png)
+![](drawio/modulator.png)
 
 ### Block diagram of demodulator section:
 
-![](./drawio/QPSK-Demo demodulator.drawio.png)
+![](drawio/demodulator.png)
 
 As you can see, I'm using a Costas Loop with a PI (Proportional-Integrator controller) to control the local oscillator
 
