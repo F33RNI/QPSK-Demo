@@ -11,7 +11,7 @@ The screenshot above shows an example of a "Hello!" message.
 ```python
 # [-1] - Silence,
 # [0] * 60 - PLL sync burst,
-# [0, 1, 2, 3] - phase (IQ) sync (MUST BE EXACTLY THESE VALUES IS THIS ORDER),
+# [0, 1, 2, 3] - phase (IQ) sync (MUST BE EXACTLY THESE VALUES IN THIS ORDER),
 # string_to_qpsk_array("Hello!") - Data (payload),
 # [-1] * 20 - Silence
 TX_DATA = [-1] + [0] * 60 + [0, 1, 2, 3] + string_to_qpsk_array("Hello!") + [-1] * 20

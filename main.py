@@ -64,7 +64,7 @@ def string_to_qpsk_array(input_string):
 #
 # [-1] - Silence,
 # [0] * 60 - PLL sync burst,
-# [0, 1, 2, 3] - phase (IQ) sync (MUST BE EXACTLY THESE VALUES IS THIS ORDER),
+# [0, 1, 2, 3] - phase (IQ) sync (MUST BE EXACTLY THESE VALUES IN THIS ORDER),
 # string_to_qpsk_array("Hello!") - Data (payload),
 # [-1] * 20 - Silence
 #
