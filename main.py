@@ -221,8 +221,8 @@ class DPLL:
         self._omega_mod_prev = omega_mod
 
         # Calculate complex output
-        vco_real = np.sin(self.omega)
-        vco_imag = np.cos(self.omega)
+        vco_real = np.cos(self.omega)
+        vco_imag = -np.sin(self.omega)
         self.vco = complex(vco_real, vco_imag)
 
 
