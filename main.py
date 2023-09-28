@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import ButterworthFilter
-import FIRFilter
+import RRCFiler
 
 
 # ################## #
@@ -101,6 +101,17 @@ HALFCYCLES_PER_SYMBOL = 4
 # Symbol rate = TRANSMITTER_CARRIER_FREQUENCY * 2 / HALFCYCLES_PER_SYMBOL
 # Bitrate = TRANSMITTER_CARRIER_FREQUENCY * 2 / HALFCYCLES_PER_SYMBOL * 2
 BANDWIDTH = TRANSMITTER_CARRIER_FREQUENCY * 2 / HALFCYCLES_PER_SYMBOL * 2
+
+# ############## #
+# FILTERS CONFIG #
+# ############## #
+# Transmitter RRC output filter number of positive lobes and alpha (roll-off factor)
+TRANSMITTER_FILTER_LOBES_N = 40
+TRANSMITTER_FILTER_ALPHA = 0.98
+
+# Transmitter RRC output filter number of positive lobes and alpha (roll-off factor)
+RECEIVER_FILTER_LOBES_N = 40
+RECEIVER_FILTER_ALPHA = 0.98
 
 # ######################## #
 # TRANSMISSION LINE CONFIG #
@@ -377,22 +388,28 @@ def main():
                                                             [[value_i], [value_q]]),
                                                            axis=1)
 
+    # Initialize filter
+    modulation_filter = RRCFiler.RRCFilter(RRCFiler.FILTER_TYPE_BANDPASS,
+                                           SAMPLING_RATE,
+                                           TRANSMITTER_CARRIER_FREQUENCY - BANDWIDTH / 2,
+                                           TRANSMITTER_CARRIER_FREQUENCY + BANDWIDTH / 2,
+                                           positive_lobes_n=TRANSMITTER_FILTER_LOBES_N,
+                                           alpha=TRANSMITTER_FILTER_ALPHA)
+
+    # Compensate for RRC filter delay
+    modulated_signal = np.append(modulated_signal, np.zeros(modulation_filter.filter_length // 2, dtype=np.float32))
+
     # Apply band-pass filter to isolate carrier
-    modulation_filter_taps = FIRFilter.estimate_filter_len(TRANSMITTER_CARRIER_FREQUENCY - BANDWIDTH,
-                                                           TRANSMITTER_CARRIER_FREQUENCY + BANDWIDTH,
-                                                           SAMPLING_RATE,
-                                                           50)
-    modulation_filter = FIRFilter.FIRFilter(FIRFilter.FILTER_TYPE_BANDPASS,
-                                            SAMPLING_RATE,
-                                            modulation_filter_taps,
-                                            TRANSMITTER_CARRIER_FREQUENCY - BANDWIDTH,
-                                            TRANSMITTER_CARRIER_FREQUENCY + BANDWIDTH)
     for i in range(len(modulated_signal)):
         # Filter each sample
         modulated_signal[i] = modulation_filter.filter(modulated_signal[i])
 
         # Compensate amplitude
         modulated_signal[i] /= np.sqrt(2)
+
+    # Compensate for RRC filter delay
+    modulated_signal = modulated_signal[modulation_filter.filter_length // 2:]
+    modulated_signal_t += modulation_filter.filter_length / 2 / SAMPLING_RATE
 
     # Print log info
     print("Generated {} samples. Total time: ~{:.3f}s".format(len(modulated_signal), modulated_signal_t[-1]))
@@ -406,8 +423,9 @@ def main():
         delay_seconds = np.random.uniform(low=LINE_DELAY_FROM, high=LINE_DELAY_TO)
         delay_samples = int(delay_seconds * SAMPLING_RATE)
         modulated_signal = np.append(np.zeros(delay_samples, dtype=np.float32), modulated_signal)
+        modulated_signal_t_from = modulated_signal_t[0]
         modulated_signal_t += delay_seconds
-        modulated_signal_t_delay = np.arange(0, modulated_signal_t[0], 1 / SAMPLING_RATE)[:-1]
+        modulated_signal_t_delay = np.arange(modulated_signal_t_from, modulated_signal_t[0], 1 / SAMPLING_RATE)[:-1]
         modulated_signal_t = np.append(modulated_signal_t_delay, modulated_signal_t)
         modulated_data_phase_plot = np.append(np.zeros(delay_samples, dtype=np.int8), modulated_data_phase_plot)
         modulated_data_i_plot = np.append(np.zeros(delay_samples, dtype=np.float32), modulated_data_i_plot)
@@ -438,24 +456,19 @@ def main():
     # ######################################## #
 
     # Filters
-    receiver_filter_taps = FIRFilter.estimate_filter_len(TRANSMITTER_CARRIER_FREQUENCY - BANDWIDTH,
-                                                         TRANSMITTER_CARRIER_FREQUENCY + BANDWIDTH,
-                                                         SAMPLING_RATE,
-                                                         50)
-    receiver_filter = FIRFilter.FIRFilter(FIRFilter.FILTER_TYPE_BANDPASS,
-                                          SAMPLING_RATE,
-                                          receiver_filter_taps,
-                                          TRANSMITTER_CARRIER_FREQUENCY - BANDWIDTH,
-                                          TRANSMITTER_CARRIER_FREQUENCY + BANDWIDTH)
-    agc_filter_taps = FIRFilter.estimate_filter_len(RECEIVER_CARRIER_FREQUENCY / 2,
-                                                    RECEIVER_CARRIER_FREQUENCY * 2, SAMPLING_RATE, 100)
-    agc_filter = FIRFilter.FIRFilter(FIRFilter.FILTER_TYPE_BANDPASS, SAMPLING_RATE, agc_filter_taps,
-                                     RECEIVER_CARRIER_FREQUENCY / 2, RECEIVER_CARRIER_FREQUENCY * 2)
-
+    receiver_filter = RRCFiler.RRCFilter(RRCFiler.FILTER_TYPE_BANDPASS,
+                                         SAMPLING_RATE,
+                                         RECEIVER_CARRIER_FREQUENCY - BANDWIDTH / 2,
+                                         RECEIVER_CARRIER_FREQUENCY + BANDWIDTH / 2,
+                                         positive_lobes_n=RECEIVER_FILTER_LOBES_N,
+                                         alpha=RECEIVER_FILTER_ALPHA)
     filter_i = ButterworthFilter.Filter(ButterworthFilter.FILTER_TYPE_LOWPASS, SAMPLING_RATE,
                                         RECEIVER_CARRIER_FREQUENCY * 0.7, order=3)
     filter_q = ButterworthFilter.Filter(ButterworthFilter.FILTER_TYPE_LOWPASS, SAMPLING_RATE,
                                         RECEIVER_CARRIER_FREQUENCY * 0.7, order=3)
+
+    # Compensate RRC filter delay
+    transmitted_signal = np.append(transmitted_signal, np.zeros(receiver_filter.filter_length // 2, dtype=np.float32))
 
     # Initialize PLL class
     pll = DPLL(PLL_K_P, PLL_K_I, PLL_K_VCO)
@@ -528,13 +541,6 @@ def main():
 
         # Pass current sample to automatic gain control
         agc_input = filtered_sample
-
-        # Bandpass current sample for AGC input if no carrier is detected
-        if not carrier_detected:
-            agc_input = agc_filter.filter(agc_input)
-        # Reset filter buffer
-        else:
-            agc_filter.filter_state = np.zeros(len(agc_filter.filter_state), dtype=np.float32)
 
         # Calculate automatic gain control
         if abs(filtered_sample) > agc_accumulator:
@@ -773,6 +779,21 @@ def main():
     # ############# #
     # DATA PLOTTING #
     # ############# #
+    # Compensate RRC filter delay
+    zero_crossings_plot = zero_crossings_plot[receiver_filter.filter_length // 2:]
+    sampling_points_plot = sampling_points_plot[receiver_filter.filter_length // 2:]
+    decoded_data_plot = decoded_data_plot[receiver_filter.filter_length // 2:]
+    received_signal_plot = received_signal_plot[receiver_filter.filter_length // 2:]
+    received_signal_t = received_signal_t[receiver_filter.filter_length // 2:]
+    received_signal_agc_plot = received_signal_agc_plot[receiver_filter.filter_length // 2:]
+    agc_gain_plot = agc_gain_plot[receiver_filter.filter_length // 2:]
+    pll_out_plot = pll_out_plot[receiver_filter.filter_length // 2:]
+    i_mixed_plot = i_mixed_plot[receiver_filter.filter_length // 2:]
+    q_mixed_plot = q_mixed_plot[receiver_filter.filter_length // 2:]
+    signs_i_plot = signs_i_plot[receiver_filter.filter_length // 2:]
+    signs_q_plot = signs_q_plot[receiver_filter.filter_length // 2:]
+    carrier_errors_plot = carrier_errors_plot[receiver_filter.filter_length // 2:]
+
     # Calculate fft
     real_fft = np.fft.rfft(received_signal_agc_plot)
     s_mag = np.abs(real_fft) * 2 / (len(received_signal_agc_plot) / 2)

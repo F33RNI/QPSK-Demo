@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-09-27T15:29:22.453Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" etag="r1cxwJVKvXrb2C0xhFWj" version="21.8.2" type="device">
+<mxfile host="app.diagrams.net" modified="2023-09-28T18:57:31.883Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" etag="I9voy9DT2_pcj-Ed7K1F" version="21.8.2" type="device">
   <diagram id="HDGeu96EwJTAYUVn2mI9" name="Page-1">
     <mxGraphModel dx="1434" dy="750" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -58,9 +58,6 @@
               <mxPoint x="60" y="40" />
             </Array>
           </mxGeometry>
-        </mxCell>
-        <mxCell id="SC3UIt4IJOYI4lEojMen-47" value="FIR bandpass filter" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="190" y="330" width="100" height="30" as="geometry" />
         </mxCell>
         <mxCell id="SC3UIt4IJOYI4lEojMen-61" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;" parent="1" source="SC3UIt4IJOYI4lEojMen-48" target="SC3UIt4IJOYI4lEojMen-54" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -411,7 +408,7 @@
         <mxCell id="_9m8mjD01f-hznnUK-HB-1" value="https://github.com/F33RNI/QPSK-Demo&lt;br&gt;&lt;br&gt;Drawn by Fern Lane, 2023" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;strokeWidth=1;fontSize=14;fontStyle=0" parent="1" vertex="1">
           <mxGeometry x="1370" y="530" width="270" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="N5Y4rW9etSAQyaRnbx4b-2" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="SC3UIt4IJOYI4lEojMen-50">
+        <mxCell id="N5Y4rW9etSAQyaRnbx4b-2" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="SC3UIt4IJOYI4lEojMen-50" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="300" y="280" as="sourcePoint" />
             <mxPoint x="350" y="230" as="targetPoint" />
@@ -419,6 +416,9 @@
               <mxPoint x="300" y="160" />
             </Array>
           </mxGeometry>
+        </mxCell>
+        <mxCell id="6ZrmTrwd_nNaPJc4jJcb-1" value="Root-raised-cosine (RRC) bandpass filter" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="165" y="330" width="150" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
