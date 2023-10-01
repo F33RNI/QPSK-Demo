@@ -240,31 +240,6 @@ class DPLL:
             self.halfcycles_counter = 0
             self.zero_crossing_flag = True
 
-        """
-
-        # Calculate current frequency
-        if self.omega > omega_prev:
-            self.frequency = ((self.omega - omega_prev) / (2 * np.pi)) * SAMPLING_RATE
-        else:
-            self.frequency = ((omega_prev - self.omega) / (2 * np.pi)) * SAMPLING_RATE
-        if self.frequency > 0:
-            self.frequency_filtered = self.frequency_filtered * self._frequency_filter_k \
-                                      + self.frequency * (1. - self._frequency_filter_k)
-
-        # Calculate MOD (%) for ZCD
-        omega_mod = int(self.omega % (np.pi * HALFCYCLES_PER_SYMBOL))
-
-        # Zero-crossing @ HALFCYCLES_PER_SYMBOL * PI (symbol rate)
-        if self._omega_mod_prev > 0 and omega_mod == 0:
-            self._omega_mod_prev = omega_mod
-            self.zero_crossing_flag = True
-        self._omega_mod_prev = omega_mod
-
-        
-
-        self.omega %= 2 * np.pi
-        """
-
         # Calculate complex output
         vco_real = np.cos(self.omega)
         vco_imag = -np.sin(self.omega)
