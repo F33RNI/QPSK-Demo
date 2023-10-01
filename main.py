@@ -194,7 +194,7 @@ class DPLL:
         self.frequency_filtered = RECEIVER_CARRIER_FREQUENCY
         self.zero_crossing_flag = False
         self.omega = 0
-        self._omega_mod_prev = 0
+        self.halfcycles_counter = 0
 
     def step(self, error, sample_time) -> None:
         """
@@ -215,9 +215,38 @@ class DPLL:
         # Calculate base for sin and cos
         omega_prev = self.omega
         self.omega = 2 * np.pi * RECEIVER_CARRIER_FREQUENCY * sample_time + self.output_phase
+        self.omega %= (2 * np.pi)
+
+        # Calculate momentary phase difference
+        if self.omega > omega_prev:
+            omega_diff = self.omega - omega_prev
+        else:
+            omega_diff = (self.omega + (2 * np.pi)) - omega_prev
+
+        # Calculate current VCO frequency
+        self.frequency = (omega_diff / (2 * np.pi)) * SAMPLING_RATE
+        if self.frequency > 0:
+            self.frequency_filtered = self.frequency_filtered * self._frequency_filter_k \
+                                      + self.frequency * (1. - self._frequency_filter_k)
+
+        # Half-cycle detector
+        # omega_prev <= np.pi <= self.omega and self.omega != omega_prev -> pi cross
+        # omega_prev > self.omega -> 2*pi cross
+        if (omega_prev <= np.pi <= self.omega != omega_prev) or omega_prev > self.omega:
+            self.halfcycles_counter += 1
+
+        # Symbol rate detector (aka Zero-crossing detector) @ HALFCYCLES_PER_SYMBOL * PI (symbol rate)
+        if self.halfcycles_counter >= HALFCYCLES_PER_SYMBOL:
+            self.halfcycles_counter = 0
+            self.zero_crossing_flag = True
+
+        """
 
         # Calculate current frequency
-        self.frequency = ((self.omega - omega_prev) / (2 * np.pi)) * SAMPLING_RATE
+        if self.omega > omega_prev:
+            self.frequency = ((self.omega - omega_prev) / (2 * np.pi)) * SAMPLING_RATE
+        else:
+            self.frequency = ((omega_prev - self.omega) / (2 * np.pi)) * SAMPLING_RATE
         if self.frequency > 0:
             self.frequency_filtered = self.frequency_filtered * self._frequency_filter_k \
                                       + self.frequency * (1. - self._frequency_filter_k)
@@ -230,6 +259,11 @@ class DPLL:
             self._omega_mod_prev = omega_mod
             self.zero_crossing_flag = True
         self._omega_mod_prev = omega_mod
+
+        
+
+        self.omega %= 2 * np.pi
+        """
 
         # Calculate complex output
         vco_real = np.cos(self.omega)
