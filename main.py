@@ -156,16 +156,10 @@ PLL_K_VCO = (RECEIVER_CARRIER_FREQUENCY / 2)
 # AGC accumulator K when signal <= accumulator
 AGC_CONSTANT_FALLING = 0.98
 
-# AGC accumulator K when signal > accumulator
-AGC_CONSTANT_RISING = 0.98
-
-# "Target" amplitude after AGC
-AGC_CORRECTION_FACTOR = 0.7
-
-# Signal (AGS accumulator) must be above this threshold to start PLL locking and demodulating (in dBFS)
+# Signal must be above this threshold to start PLL locking and demodulating (in dBFS RMS)
 CARRIER_START_AMPLITUDE = -20
 
-# Signal (AGS accumulator) must be below this threshold to stop PLL locking and demodulating (in dBFS)
+# Signal must be below this threshold to stop PLL locking and demodulating (in dBFS RMS)
 CARRIER_LOST_AMPLITUDE = -30
 
 # ############### #
@@ -505,7 +499,7 @@ def main():
     current_byte_bits_position = 6
 
     # Automatic gain control variable
-    agc_accumulator = 0.
+    peak_detector = 0.
 
     # Stores I and Q signs from previous cycle (for sampling detector)
     sign_i_prev = 0
@@ -548,30 +542,31 @@ def main():
         # Filter current sample
         filtered_sample = receiver_filter.filter(received_sample)
 
-        # Pass current sample to automatic gain control
-        agc_input = filtered_sample
+        # Pass current sample to peak detector (automatic gain control)
+        peak_detector_input = abs(filtered_sample)
 
-        # Calculate automatic gain control
-        if abs(filtered_sample) > agc_accumulator:
-            agc_accumulator = agc_accumulator * AGC_CONSTANT_RISING + abs(agc_input) * (1. - AGC_CONSTANT_RISING)
+        # Calculate peak detector
+        if peak_detector_input > peak_detector:
+            peak_detector = peak_detector_input
         else:
-            agc_accumulator = agc_accumulator * AGC_CONSTANT_FALLING + abs(agc_input) * (1. - AGC_CONSTANT_FALLING)
+            peak_detector = peak_detector * AGC_CONSTANT_FALLING + peak_detector_input * (1. - AGC_CONSTANT_FALLING)
 
-        # Check if we have any AGC (also input signal)
-        if agc_accumulator > 0.:
+        # Check if we have any signal
+        if peak_detector > 0.:
             # Set carrier detected flag
-            signal_strength = 20 * np.log10(agc_accumulator)
-            if not carrier_detected and signal_strength > CARRIER_START_AMPLITUDE:
+            signal_strength_rms = 20 * np.log10(peak_detector / np.sqrt(2))
+            if not carrier_detected and signal_strength_rms > CARRIER_START_AMPLITUDE:
                 carrier_detected = True
-                print("Carrier detected @ ~{:.3f}s".format(current_time))
-            if carrier_detected and signal_strength < CARRIER_LOST_AMPLITUDE:
+                print("Carrier detected @ ~{:.3f}s. RMS volume: {:.1f}dBFS".format(current_time, signal_strength_rms))
+            if carrier_detected and signal_strength_rms < CARRIER_LOST_AMPLITUDE:
                 carrier_detected = False
                 pll_locked = False
-                print("Carrier lost and PLL unlocked @ ~{:.3f}s".format(current_time))
+                print("Carrier lost and PLL unlocked @ ~{:.3f}s. RMS volume: {:.1f}dBFS".format(current_time,
+                                                                                                signal_strength_rms))
 
             # Apply automatic gain
             if carrier_detected:
-                filtered_sample *= AGC_CORRECTION_FACTOR / agc_accumulator
+                filtered_sample *= 1. / peak_detector
 
                 # Hard-clip to -1 - 1 (to prevent huge AGC initial overshoot)
                 filtered_sample = np.clip(filtered_sample, -1., 1.)
@@ -771,7 +766,7 @@ def main():
         received_signal_plot = np.append(received_signal_plot, received_sample)
         received_signal_t = np.append(received_signal_t, current_time)
         received_signal_agc_plot = np.append(received_signal_agc_plot, filtered_sample)
-        agc_gain_plot = np.append(agc_gain_plot, agc_accumulator)
+        agc_gain_plot = np.append(agc_gain_plot, peak_detector)
         pll_out_plot = np.append(pll_out_plot, pll.vco)
         i_mixed_plot = np.append(i_mixed_plot, i_mixed)
         q_mixed_plot = np.append(q_mixed_plot, q_mixed)
@@ -792,7 +787,7 @@ def main():
     zero_crossings_plot = zero_crossings_plot[receiver_filter.filter_length // 2:]
     sampling_points_plot = sampling_points_plot[receiver_filter.filter_length // 2:]
     decoded_data_plot = decoded_data_plot[receiver_filter.filter_length // 2:]
-    received_signal_plot = received_signal_plot[receiver_filter.filter_length // 2:]
+    received_signal_plot = received_signal_plot[:-receiver_filter.filter_length // 2]
     received_signal_t = received_signal_t[receiver_filter.filter_length // 2:]
     received_signal_agc_plot = received_signal_agc_plot[receiver_filter.filter_length // 2:]
     agc_gain_plot = agc_gain_plot[receiver_filter.filter_length // 2:]
@@ -867,8 +862,8 @@ def main():
     axs[1, 0].plot(received_signal_t, received_signal_plot, "tab:blue", label="Received signal", alpha=0.7)
     axs[1, 0].plot(received_signal_t, agc_gain_plot, "tab:orange", linestyle="dashed",
                    label="Automatic gain control (AGC)", alpha=0.7)
-    axs[1, 0].plot(received_signal_t, received_signal_agc_plot, "tab:orange", label="Received signal after AGC",
-                   alpha=0.7)
+    axs[1, 0].plot(received_signal_t, received_signal_agc_plot, "tab:orange",
+                   label="Received signal after filtering and AGC", alpha=0.7)
     axs[1, 0].plot(received_signal_t, i_mixed_plot, "tab:olive", label="I", alpha=0.7)
     axs[1, 0].plot(received_signal_t, q_mixed_plot, "tab:cyan", label="Q", alpha=0.7)
     axs[1, 0].plot(received_signal_t, carrier_errors_plot, "tab:red", label="PLL input (carrier error)", alpha=0.7)
