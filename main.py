@@ -172,7 +172,7 @@ CARRIER_LOST_AMPLITUDE = -30
 # PLL LOCK CONFIG #
 # ############### #
 # PLL's input (IQ error) should't change during PLL_LOCKED_TIME more than this value
-PLL_LOCKED_THRESHOLD = 0.08
+PLL_LOCKED_THRESHOLD = 0.1
 
 # PLL's input (IQ error) should't change during this time (in seconds) more than PLL_LOCKED_THRESHOLD
 # Usually 20 full carrier cycles if enough
