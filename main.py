@@ -97,10 +97,8 @@ SAMPLING_RATE = 8000
 HALFCYCLES_PER_SYMBOL = 4
 
 # Signal bandwidth
-# Half-cycles rate = TRANSMITTER_CARRIER_FREQUENCY * 2
-# Symbol rate = TRANSMITTER_CARRIER_FREQUENCY * 2 / HALFCYCLES_PER_SYMBOL
-# Bitrate = TRANSMITTER_CARRIER_FREQUENCY * 2 / HALFCYCLES_PER_SYMBOL * 2
-BANDWIDTH = TRANSMITTER_CARRIER_FREQUENCY * 2 / HALFCYCLES_PER_SYMBOL * 2
+# Idk how to calculate it properly, so this works for me =)
+BANDWIDTH = TRANSMITTER_CARRIER_FREQUENCY
 
 # ############## #
 # FILTERS CONFIG #
@@ -118,7 +116,7 @@ RECEIVER_FILTER_ALPHA = 0.98
 # ######################## #
 # Set to True - to simulate transmission instead
 # Set to False - to use your real speakers and mic
-USE_LINE_SIMULATION = True
+USE_LINE_SIMULATION = False
 
 # Size of buffer for speakers and mic (PyAudio)
 # Possible values: 64 / 128 / 256 / 512 / 1024 / etc...
