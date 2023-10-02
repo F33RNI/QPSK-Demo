@@ -74,7 +74,7 @@ TX_DATA = [-1] + [0] * 60 + [0, 1, 2, 3] + string_to_qpsk_array("Hello!") + [-1]
 # Transmitter (modulator) carrier frequency (in Hz)
 TRANSMITTER_CARRIER_FREQUENCY = 1000
 
-# Amplitude of signal
+# Amplitude of signal (peak value)
 CARRIER_AMPLITUDE = 0.8
 
 # ############### #
@@ -406,9 +406,6 @@ def main():
     for i in range(len(modulated_signal)):
         # Filter each sample
         modulated_signal[i] = modulation_filter.filter(modulated_signal[i])
-
-        # Compensate amplitude
-        modulated_signal[i] /= np.sqrt(2)
 
     # Compensate for RRC filter delay
     modulated_signal = modulated_signal[modulation_filter.filter_length // 2:]
