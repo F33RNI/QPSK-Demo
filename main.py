@@ -153,9 +153,12 @@ PLL_K_VCO = (RECEIVER_CARRIER_FREQUENCY / 2)
 # ############################# #
 # AUTOMATIC GAIN CONTROL CONFIG #
 # ############################# #
-# AGC accumulator K when signal <= accumulator
-AGC_CONSTANT_FALLING = 0.98
+# AGC accumulator release gain when signal <= accumulator
+AGC_RELEASE_K = 0.98
 
+# ########################## #
+# RECEIVER THRESHOLDS CONFIG #
+# ########################## #
 # Signal must be above this threshold to start PLL locking and demodulating (in dBFS RMS)
 CARRIER_START_AMPLITUDE = -20
 
@@ -379,7 +382,6 @@ def main():
         sample_i = np.cos(2 * np.pi * TRANSMITTER_CARRIER_FREQUENCY * time_new) * value_i * amplitude_correction_factor
         sample_q = -np.sin(2 * np.pi * TRANSMITTER_CARRIER_FREQUENCY * time_new) * value_q * amplitude_correction_factor
         sample = sample_i + sample_q
-        sample *= CARRIER_AMPLITUDE
 
         # Append time and generated sample to arrays
         modulated_signal = np.append(modulated_signal, sample)
@@ -408,10 +410,26 @@ def main():
     # Compensate for RRC filter delay
     modulated_signal = np.append(modulated_signal, np.zeros(modulation_filter.filter_length // 2, dtype=np.float32))
 
-    # Apply band-pass filter to isolate carrier
+    # Automatic gain control variable
+    peak_detector = 0.
+
+    # Apply band-pass filter to isolate carrier and AGC to stabilize output signal
     for i in range(len(modulated_signal)):
         # Filter each sample
         modulated_signal[i] = modulation_filter.filter(modulated_signal[i])
+
+        # Pass current sample to peak detector (automatic gain control)
+        peak_detector_input = abs(modulated_signal[i])
+
+        # Calculate peak detector
+        if peak_detector_input > peak_detector:
+            peak_detector = peak_detector_input
+        else:
+            peak_detector = peak_detector * AGC_RELEASE_K + peak_detector_input * (1. - AGC_RELEASE_K)
+
+        # Apply AGC and ignore silence
+        if peak_detector > 0.2:
+            modulated_signal[i] *= CARRIER_AMPLITUDE / peak_detector
 
     # Compensate for RRC filter delay
     modulated_signal = modulated_signal[modulation_filter.filter_length // 2:]
@@ -558,7 +576,7 @@ def main():
         if peak_detector_input > peak_detector:
             peak_detector = peak_detector_input
         else:
-            peak_detector = peak_detector * AGC_CONSTANT_FALLING + peak_detector_input * (1. - AGC_CONSTANT_FALLING)
+            peak_detector = peak_detector * AGC_RELEASE_K + peak_detector_input * (1. - AGC_RELEASE_K)
 
         # Check if we have any signal
         if peak_detector > 0.:

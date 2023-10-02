@@ -32,56 +32,56 @@ TX_DATA = [-1] + [0] * 60 + [0, 1, 2, 3] + string_to_qpsk_array("Hello!") + [-1]
 Program output:
 ```
 Generated 1729 samples. Total time: ~0.236s
-Added ~0.002s (14 samples) of delay
-Carrier detected @ ~0.022s. RMS volume: -14.4dBFS
-PLL locked @ ~0.098s. VCO: ~999.27Hz (error between 950.0Hz: 51863ppm). I: 1, Q: -1
-Detected phase change @ ~0.145s. Sampling position: 2 samples after zero-cross
-IQ values of phase 1 recorded @ ~0.146s. I: 1, Q: 1
-IQ values of phase 2 recorded @ ~0.148s. I: -1, Q: -1
-IQ values of phase 3 recorded @ ~0.150s. I: -1, Q: 1
-Decoded data @ ~0.152s: 1 (0b01)
-Decoded data @ ~0.154s: 0 (0b00)
-Decoded data @ ~0.156s: 2 (0b10)
-Decoded data @ ~0.158s: 0 (0b00)
+Added ~0.005s (40 samples) of delay
+Carrier detected @ ~0.025s. RMS volume: -18.4dBFS
+PLL locked @ ~0.112s. VCO: ~998.80Hz (error between 950.0Hz: 51366ppm). I: 1, Q: 1
+Detected phase change @ ~0.148s. Sampling position: 4 samples after zero-cross
+IQ values of phase 1 recorded @ ~0.149s. I: -1, Q: 1
+IQ values of phase 2 recorded @ ~0.151s. I: 1, Q: -1
+IQ values of phase 3 recorded @ ~0.153s. I: -1, Q: -1
+Decoded data @ ~0.155s: 1 (0b01)
+Decoded data @ ~0.157s: 0 (0b00)
+Decoded data @ ~0.159s: 2 (0b10)
+Decoded data @ ~0.161s: 0 (0b00)
 Decoded byte: 0b01001000, char: H
-Decoded data @ ~0.160s: 1 (0b01)
-Decoded data @ ~0.162s: 2 (0b10)
-Decoded data @ ~0.164s: 1 (0b01)
-Decoded data @ ~0.166s: 1 (0b01)
+Decoded data @ ~0.163s: 1 (0b01)
+Decoded data @ ~0.165s: 2 (0b10)
+Decoded data @ ~0.167s: 1 (0b01)
+Decoded data @ ~0.169s: 1 (0b01)
 Decoded byte: 0b01100101, char: e
-Decoded data @ ~0.168s: 1 (0b01)
-Decoded data @ ~0.170s: 2 (0b10)
-Decoded data @ ~0.172s: 3 (0b11)
-Decoded data @ ~0.174s: 0 (0b00)
+Decoded data @ ~0.171s: 1 (0b01)
+Decoded data @ ~0.173s: 2 (0b10)
+Decoded data @ ~0.175s: 3 (0b11)
+Decoded data @ ~0.177s: 0 (0b00)
 Decoded byte: 0b01101100, char: l
-Decoded data @ ~0.176s: 1 (0b01)
-Decoded data @ ~0.178s: 2 (0b10)
-Decoded data @ ~0.180s: 3 (0b11)
-Decoded data @ ~0.182s: 0 (0b00)
+Decoded data @ ~0.179s: 1 (0b01)
+Decoded data @ ~0.181s: 2 (0b10)
+Decoded data @ ~0.183s: 3 (0b11)
+Decoded data @ ~0.185s: 0 (0b00)
 Decoded byte: 0b01101100, char: l
-Decoded data @ ~0.184s: 1 (0b01)
-Decoded data @ ~0.186s: 2 (0b10)
-Decoded data @ ~0.188s: 3 (0b11)
-Decoded data @ ~0.190s: 3 (0b11)
+Decoded data @ ~0.187s: 1 (0b01)
+Decoded data @ ~0.189s: 2 (0b10)
+Decoded data @ ~0.191s: 3 (0b11)
+Decoded data @ ~0.193s: 3 (0b11)
 Decoded byte: 0b01101111, char: o
-Decoded data @ ~0.192s: 0 (0b00)
-Decoded data @ ~0.194s: 2 (0b10)
-Decoded data @ ~0.196s: 0 (0b00)
-Decoded data @ ~0.198s: 1 (0b01)
+Decoded data @ ~0.195s: 0 (0b00)
+Decoded data @ ~0.197s: 2 (0b10)
+Decoded data @ ~0.199s: 0 (0b00)
+Decoded data @ ~0.201s: 1 (0b01)
 Decoded byte: 0b00100001, char: !
-Decoded data @ ~0.200s: 2 (0b10)
-Decoded data @ ~0.202s: 1 (0b01)
-Decoded data @ ~0.204s: 2 (0b10)
-Decoded data @ ~0.206s: 1 (0b01)
+Decoded data @ ~0.203s: 2 (0b10)
+Decoded data @ ~0.205s: 1 (0b01)
+Decoded data @ ~0.207s: 2 (0b10)
+Decoded data @ ~0.209s: 1 (0b01)
 Decoded byte: 0b10011001, char: 
-Decoded data @ ~0.208s: 1 (0b01)
-Decoded data @ ~0.210s: 0 (0b00)
-Decoded data @ ~0.212s: 3 (0b11)
-Decoded data @ ~0.214s: 3 (0b11)
-Decoded byte: 0b01001111, char: O
-Decoded data @ ~0.216s: 0 (0b00)
-Carrier lost and PLL unlocked @ ~0.216s. RMS volume: -30.0dBFS
-Processing finished. Took 0.278s
+Decoded data @ ~0.211s: 1 (0b01)
+Decoded data @ ~0.213s: 2 (0b10)
+Decoded data @ ~0.215s: 0 (0b00)
+Decoded data @ ~0.217s: 0 (0b00)
+Decoded byte: 0b01100000, char: `
+Decoded data @ ~0.219s: 3 (0b11)
+Carrier lost and PLL unlocked @ ~0.220s. RMS volume: -30.1dBFS
+Processing finished. Took 0.282s
 ```
 
 As you can see the message is received and decoded successfully:
