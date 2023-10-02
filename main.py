@@ -91,7 +91,7 @@ RECEIVER_CARRIER_FREQUENCY = 950
 SAMPLING_RATE = 8000
 
 # Rate of symbols in carrier halfcycles (2 halfcycles = 1 full carrier wave cycle)
-# Minimum value: 1
+# Minimum value: 2
 # Lower values - each symbol (2 bits) takes less time (lower stability, higher data rate)
 # Higher values - each symbol (2 bits) takes more time (higher stability, lower data rates)
 HALFCYCLES_PER_SYMBOL = 4
@@ -392,9 +392,15 @@ def main():
                                                            axis=1)
 
     # Initialize filter
-    modulation_filter = RRCFiler.RRCFilter(RRCFiler.FILTER_TYPE_BANDPASS,
+    if TRANSMITTER_CARRIER_FREQUENCY - BANDWIDTH / 2 > 0:
+        filter_type = RRCFiler.FILTER_TYPE_BANDPASS
+        filter_lower_f = TRANSMITTER_CARRIER_FREQUENCY - BANDWIDTH / 2
+    else:
+        filter_type = RRCFiler.FILTER_TYPE_LOWPASS
+        filter_lower_f = TRANSMITTER_CARRIER_FREQUENCY + BANDWIDTH / 2
+    modulation_filter = RRCFiler.RRCFilter(filter_type,
                                            SAMPLING_RATE,
-                                           TRANSMITTER_CARRIER_FREQUENCY - BANDWIDTH / 2,
+                                           filter_lower_f,
                                            TRANSMITTER_CARRIER_FREQUENCY + BANDWIDTH / 2,
                                            positive_lobes_n=TRANSMITTER_FILTER_LOBES_N,
                                            alpha=TRANSMITTER_FILTER_ALPHA)
@@ -456,9 +462,15 @@ def main():
     # ######################################## #
 
     # Filters
-    receiver_filter = RRCFiler.RRCFilter(RRCFiler.FILTER_TYPE_BANDPASS,
+    if RECEIVER_CARRIER_FREQUENCY - BANDWIDTH / 2 > 0:
+        filter_type = RRCFiler.FILTER_TYPE_BANDPASS
+        filter_lower_f = RECEIVER_CARRIER_FREQUENCY - BANDWIDTH / 2
+    else:
+        filter_type = RRCFiler.FILTER_TYPE_LOWPASS
+        filter_lower_f = RECEIVER_CARRIER_FREQUENCY + BANDWIDTH / 2
+    receiver_filter = RRCFiler.RRCFilter(filter_type,
                                          SAMPLING_RATE,
-                                         RECEIVER_CARRIER_FREQUENCY - BANDWIDTH / 2,
+                                         filter_lower_f,
                                          RECEIVER_CARRIER_FREQUENCY + BANDWIDTH / 2,
                                          positive_lobes_n=RECEIVER_FILTER_LOBES_N,
                                          alpha=RECEIVER_FILTER_ALPHA)
