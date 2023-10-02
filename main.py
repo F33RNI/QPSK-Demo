@@ -116,7 +116,7 @@ RECEIVER_FILTER_ALPHA = 0.98
 # ######################## #
 # Set to True - to simulate transmission instead
 # Set to False - to use your real speakers and mic
-USE_LINE_SIMULATION = False
+USE_LINE_SIMULATION = True
 
 # Size of buffer for speakers and mic (PyAudio)
 # Possible values: 64 / 128 / 256 / 512 / 1024 / etc...
