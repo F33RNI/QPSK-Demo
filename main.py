@@ -428,6 +428,8 @@ def main():
         # Apply AGC and ignore silence
         if peak_detector > 0.2:
             modulated_signal[i] *= CARRIER_AMPLITUDE / peak_detector
+        else:
+            modulated_signal[i] *= CARRIER_AMPLITUDE
 
     # Compensate for RRC filter delay
     modulated_signal = modulated_signal[modulation_filter.filter_length // 2:]
