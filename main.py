@@ -333,28 +333,26 @@ def main():
     # SIGNAL GENERATION (MODULATOR) #
     # ############################# #
 
-    modulated_signal = np.zeros(1, dtype=np.float32)
-    modulated_signal_t = np.zeros(1, dtype=np.float32)
-    modulated_data_phase_plot = np.zeros(1, dtype=np.int8)
-    modulated_data_i_plot = np.zeros(1, dtype=np.float32)
-    modulated_data_q_plot = np.zeros(1, dtype=np.float32)
-    modulated_data_constellation_plot = np.zeros((2, 1), dtype=np.float32)
+    modulated_signal = np.empty(0, dtype=np.float32)
+    modulated_signal_t = np.empty(0, dtype=np.float32)
+    modulated_data_phase_plot = np.empty(0, dtype=np.int8)
+    modulated_data_i_plot = np.empty(0, dtype=np.float32)
+    modulated_data_q_plot = np.empty(0, dtype=np.float32)
+    modulated_data_constellation_plot = np.empty((2, 0), dtype=np.float32)
     tx_data_position = 0
     symbol_samples_counter = 0
     value_i = 0.
     value_q = 0.
     phase = 0
+    time_new = 0.
     amplitude_correction_factor = 1. / np.sqrt(2.)
     while True:
         # Calculate next sample timestamp
-        time_new = modulated_signal_t[-1] + 1. / SAMPLING_RATE
+        time_new += 1. / SAMPLING_RATE
 
         if symbol_samples_counter == 0:
             # Check if we have data to modulate
-            if tx_data_position < len(TX_DATA) - 1:
-                # Increment counter
-                tx_data_position += 1
-
+            if tx_data_position <= len(TX_DATA) - 1:
                 # Pop from list
                 phase = TX_DATA[tx_data_position]
                 if 0 <= phase <= 3:
@@ -363,6 +361,9 @@ def main():
                 else:
                     value_i = 0.
                     value_q = 0.
+
+                # Increment counter
+                tx_data_position += 1
 
                 # "Play" new phase for some amount of cycles
                 symbol_samples_counter = int((1. / TRANSMITTER_CARRIER_FREQUENCY / 2) * SAMPLING_RATE
