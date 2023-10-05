@@ -5,6 +5,14 @@
 
 ----------
 
+### C-library
+
+Also, I've written this QPSK modulator-demodulator as a [C library](https://github.com/F33RNI/QPSK-mod-demod-libs)
+
+*This library can run 150 times faster than Python code*
+
+----------
+
 ### Block diagram of modulator section:
 
 ![](drawio/modulator.png)
